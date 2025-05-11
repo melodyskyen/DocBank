@@ -575,3 +575,19 @@ export async function getManagedFileById(
     return null;
   }
 }
+
+export async function getManagedFilesByUserId(
+  userId: string,
+): Promise<DBManagedFileType[]> {
+  try {
+    const results = await db
+      .select()
+      .from(managedFile)
+      .where(eq(managedFile.userId, userId))
+      .orderBy(desc(managedFile.uploadedAt));
+    return results;
+  } catch (error) {
+    console.error('Failed to get managed files by user id', error);
+    return [];
+  }
+}

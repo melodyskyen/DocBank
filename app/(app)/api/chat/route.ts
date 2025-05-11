@@ -35,6 +35,7 @@ import {
 import { after } from 'next/server';
 import type { Chat } from '@/lib/db/schema';
 import { differenceInSeconds } from 'date-fns';
+import { searchKnowledgeBase } from '@/lib/ai/tools/search-knowledge-base';
 
 export const maxDuration = 60;
 
@@ -163,6 +164,7 @@ export async function POST(request: Request) {
                   'createDocument',
                   'updateDocument',
                   'requestSuggestions',
+                  'searchKnowledgeBase',
                 ],
           experimental_transform: smoothStream({ chunking: 'word' }),
           experimental_generateMessageId: generateUUID,
@@ -171,6 +173,10 @@ export async function POST(request: Request) {
             createDocument: createDocument({ session, dataStream }),
             updateDocument: updateDocument({ session, dataStream }),
             requestSuggestions: requestSuggestions({
+              session,
+              dataStream,
+            }),
+            searchKnowledgeBase: searchKnowledgeBase({
               session,
               dataStream,
             }),

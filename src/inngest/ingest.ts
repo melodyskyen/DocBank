@@ -18,6 +18,9 @@ interface FileEmbedRequestedEvent {
     blobDownloadUrl: string;
     mimeType: string;
   };
+  user: {
+    id: string;
+  };
 }
 
 export const embedFileOnUpload = inngest.createFunction(
@@ -26,7 +29,7 @@ export const embedFileOnUpload = inngest.createFunction(
   async ({ event, step }) => {
     const { managedFileId, name, blobUrl, blobDownloadUrl, mimeType } =
       event.data;
-
+    const { id: userId } = event.user;
     // Check mimeType
     if (
       !mimeType.startsWith('text/') &&
@@ -142,6 +145,7 @@ export const embedFileOnUpload = inngest.createFunction(
             blobDownloadUrl: blobDownloadUrl,
             blobUrl: blobUrl,
             mimeType: mimeType,
+            userId: userId, // Or OrgID
             ...chunk.metadata,
           })),
         });

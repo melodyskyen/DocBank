@@ -18,7 +18,7 @@ import { Toolbar } from './toolbar';
 import { VersionFooter } from '../document/version-footer';
 import { ArtifactActions } from './artifact-actions';
 import { ArtifactCloseButton } from './artifact-close-button';
-import { ArtifactMessages } from '../artifact-messages';
+import { ArtifactMessages } from './artifact-messages';
 import { useSidebar } from '../ui/sidebar';
 import { useArtifact } from '@/hooks/use-artifact';
 import { imageArtifact } from '@/artifacts/image/client';
