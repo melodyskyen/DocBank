@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { TAXONOMY } from '@/lib/business/taxonomy';
 import type { ManagedFile as DBManagedFile } from '@/lib/db/schema';
-import { FileUploadModal } from '@/components/file-upload-modal';
+import { FileUploadModal } from '@/components/file-manager/file-upload-modal';
 
 // Extended ManagedFile interface for frontend use, matching new schema
 interface ManagedFile

@@ -5,8 +5,8 @@ import { openai } from '@ai-sdk/openai';
 import { embedMany, generateObject } from 'ai';
 import { store as vectorStore } from '@/lib/db/vector-store'; // Use your configured store
 import { z } from 'zod';
-import * as pdfjsLib from 'pdfjs-dist';
 import { TAXONOMY_SCHEMA } from '@/lib/business/taxonomy';
+import { extractText, getDocumentProxy } from 'unpdf';
 
 // Define the event payload type for clarity
 interface FileEmbedRequestedEvent {
@@ -49,18 +49,11 @@ export const embedFileOnUpload = inngest.createFunction(
       const fileBuffer = await response.arrayBuffer();
 
       if (mimeType === 'application/pdf') {
-        const loadingTask = pdfjsLib.getDocument(fileBuffer);
-        const pdf = await loadingTask.promise;
-
-        const pages: string[] = [];
-
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const content = await page.getTextContent();
-          const strings = content.items.map((item: any) => item.str);
-          pages.push(strings.join(' '));
-        }
-        fileContentText = pages;
+        const pdf = await getDocumentProxy(new Uint8Array(fileBuffer));
+        const { text } = await extractText(pdf, {
+          mergePages: false,
+        });
+        fileContentText = text;
       } else if (mimeType.startsWith('text/')) {
         fileContentText = [new TextDecoder().decode(fileBuffer)];
       } else {
@@ -123,6 +116,7 @@ export const embedFileOnUpload = inngest.createFunction(
         // Potentially update status to reflect this, or log for review
         return { success: false, message: 'No chunks generated' };
       }
+      console.log('Successfully generated chunks', chunks.length);
 
       const { embeddings } = await step.run('generate-embeddings', async () => {
         return embedMany({
@@ -132,12 +126,13 @@ export const embedFileOnUpload = inngest.createFunction(
           }), // Ensure dimensions match pgVector setup
         });
       });
+      console.log('Successfully generated embeddings', embeddings.length);
 
       await step.run('upsert-embeddings', async () => {
         // USER ACTION REQUIRED: Verify this structure against Mastra PgVector client docs.
         // The linter error indicates `vectors` might need to be `number[][]` and metadata passed differently.
         return vectorStore.upsert({
-          indexName: 'document-embeddings', // Ensure this index exists and matches dimensions
+          indexName: process.env.INDEX_NAME as string, // Ensure this index exists and matches dimensions
           vectors: embeddings,
           metadata: chunks.map((chunk) => ({
             text: chunk.text,
@@ -151,6 +146,7 @@ export const embedFileOnUpload = inngest.createFunction(
           })),
         });
       });
+      console.log('Successfully upserted embeddings', embeddings.length);
     }
 
     await step.run('update-db-status', async () => {
@@ -161,6 +157,7 @@ export const embedFileOnUpload = inngest.createFunction(
         tags,
       });
     });
+    console.log('Successfully updated db status');
 
     return {
       success: true,

@@ -1,5 +1,5 @@
-import { Artifact } from '@/components/create-artifact';
-import { CodeEditor } from '@/components/code-editor';
+import { Artifact } from '@/components/artifact/create-artifact';
+import { CodeEditor } from '@/components/editor/code/code-editor';
 import {
   CopyIcon,
   LogsIcon,
@@ -14,7 +14,7 @@ import {
   Console,
   ConsoleOutput,
   ConsoleOutputContent,
-} from '@/components/console';
+} from '@/components/editor/code/console';
 
 const OUTPUT_HANDLERS = {
   matplotlib: `

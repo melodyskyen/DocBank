@@ -27,11 +27,13 @@ import {
   type DBMessage,
   type Chat,
   stream,
+  managedFile,
+  type ManagedFile as DBManagedFileType,
 } from './schema';
-import type { ArtifactKind } from '@/components/artifact';
+import type { ArtifactKind } from '@/components/artifact/artifact';
 import { generateUUID } from '../utils';
 import { generateHashedPassword } from './utils';
-import type { VisibilityType } from '@/components/visibility-selector';
+import type { VisibilityType } from '@/components/chat/visibility-selector';
 
 // Optionally, if not using email/pass login, you can
 // use the Drizzle adapter for Auth.js / NextAuth
@@ -40,6 +42,12 @@ import type { VisibilityType } from '@/components/visibility-selector';
 // biome-ignore lint: Forbidden non-null assertion.
 const client = postgres(process.env.POSTGRES_URL!);
 const db = drizzle(client);
+
+// Type for creating a new managed file, omitting auto-generated/managed fields
+export type NewManagedFile = Omit<
+  DBManagedFileType,
+  'id' | 'uploadedAt' | 'isEmbedded'
+>;
 
 export async function getUser(email: string): Promise<Array<User>> {
   try {
@@ -507,5 +515,63 @@ export async function getStreamIdsByChatId({ chatId }: { chatId: string }) {
   } catch (error) {
     console.error('Failed to get stream ids by chat id from database');
     throw error;
+  }
+}
+
+export async function createManagedFile(
+  newFile: NewManagedFile,
+): Promise<DBManagedFileType | null> {
+  try {
+    const [result] = await db
+      .insert(managedFile)
+      .values({
+        ...newFile,
+        uploadedAt: new Date(),
+        isEmbedded: false,
+      })
+      .returning();
+    return result || null;
+  } catch (error) {
+    console.error('Failed to create managed file in database', error);
+    return null;
+  }
+}
+
+export async function updateManagedFile({
+  id,
+  isEmbedded,
+  aiSummary,
+  tags,
+}: {
+  id: string;
+  isEmbedded: boolean;
+  aiSummary: string;
+  tags: string[];
+}): Promise<DBManagedFileType | null> {
+  try {
+    const [result] = await db
+      .update(managedFile)
+      .set({ isEmbedded, aiSummary, tags })
+      .where(eq(managedFile.id, id))
+      .returning();
+    return result || null;
+  } catch (error) {
+    console.error('Failed to update managed file', error);
+    return null;
+  }
+}
+
+export async function getManagedFileById(
+  id: string,
+): Promise<DBManagedFileType | null> {
+  try {
+    const [result] = await db
+      .select()
+      .from(managedFile)
+      .where(eq(managedFile.id, id));
+    return result || null;
+  } catch (error) {
+    console.error('Failed to get managed file by id', error);
+    return null;
   }
 }

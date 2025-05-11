@@ -164,6 +164,9 @@ importers:
       pdfjs-dist:
         specifier: ^5.2.133
         version: 5.2.133
+      pg:
+        specifier: 8.14.1
+        version: 8.14.1
       postgres:
         specifier: ^3.4.4
         version: 3.4.5
@@ -230,6 +233,9 @@ importers:
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.17)
+      unpdf:
+        specifier: ^1.0.4
+        version: 1.0.4(@napi-rs/canvas@0.1.70)
       usehooks-ts:
         specifier: ^3.1.0
         version: 3.1.1(react@19.0.0-rc-45804af1-20241021)
@@ -4848,15 +4854,6 @@ packages:
       pg-native:
         optional: true
 
-  pg@8.15.6:
-    resolution: {integrity: sha512-yvao7YI3GdmmrslNVsZgx9PfntfWrnXwtR+K/DjI0I/sTKif4Z623um+sjVZ1hk5670B+ODjvHDAckKdjmPTsg==}
-    engines: {node: '>= 8.0.0'}
-    peerDependencies:
-      pg-native: '>=3.0.1'
-    peerDependenciesMeta:
-      pg-native:
-        optional: true
-
   pgpass@1.0.5:
     resolution: {integrity: sha512-FdW9r/jQZhSeohs1Z3sI1yxFQNFvMcnmfuj4WBMUTxOrAyLMaTcE1aAMBiTlbMNaXvBCQuVi0R7hd8udDSP7ug==}
 
@@ -5654,6 +5651,14 @@ packages:
 
   unist-util-visit@5.0.0:
     resolution: {integrity: sha512-MR04uvD+07cwl/yhVuVWAtw+3GOR/knlL55Nd/wAdblk27GCVt3lqpTivy/tkJcZoNPzTwS1Y+KMojlLDhoTzg==}
+
+  unpdf@1.0.4:
+    resolution: {integrity: sha512-3l0s+KC28V7jKCNR5aRrYgAk/Y1fI1QD9tnKqPWLd5omAtXXruDtS7xlpytxFC1XKD13XnT8VrNmPWAg+3AtkQ==}
+    peerDependencies:
+      '@napi-rs/canvas': ^0.1.69
+    peerDependenciesMeta:
+      '@napi-rs/canvas':
+        optional: true
 
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
@@ -7158,8 +7163,8 @@ snapshots:
       '@upstash/redis': 1.34.9
       ai: 4.3.13(react@19.0.0-rc-45804af1-20241021)(zod@3.24.4)
       js-tiktoken: 1.0.20
-      pg: 8.15.6
-      pg-pool: 3.9.6(pg@8.15.6)
+      pg: 8.14.1
+      pg-pool: 3.9.6(pg@8.14.1)
       postgres: 3.4.5
       redis: 4.7.1
       xxhash-wasm: 1.1.0
@@ -7189,7 +7194,7 @@ snapshots:
     dependencies:
       '@mastra/core': 0.9.3(bufferutil@4.0.9)(openapi-types@12.1.3)(react@19.0.0-rc-45804af1-20241021)(zod@3.24.2)
       async-mutex: 0.5.0
-      pg: 8.15.6
+      pg: 8.14.1
       pg-promise: 11.13.0(pg-query-stream@4.8.1(pg@8.14.1))
       xxhash-wasm: 1.1.0
     transitivePeerDependencies:
@@ -11245,10 +11250,6 @@ snapshots:
     dependencies:
       pg: 8.14.1
 
-  pg-pool@3.9.6(pg@8.15.6):
-    dependencies:
-      pg: 8.15.6
-
   pg-promise@11.13.0(pg-query-stream@4.8.1(pg@8.14.1)):
     dependencies:
       assert-options: 0.8.2
@@ -11290,16 +11291,6 @@ snapshots:
     dependencies:
       pg-connection-string: 2.8.5
       pg-pool: 3.9.6(pg@8.14.1)
-      pg-protocol: 1.9.5
-      pg-types: 2.2.0
-      pgpass: 1.0.5
-    optionalDependencies:
-      pg-cloudflare: 1.2.5
-
-  pg@8.15.6:
-    dependencies:
-      pg-connection-string: 2.8.5
-      pg-pool: 3.9.6(pg@8.15.6)
       pg-protocol: 1.9.5
       pg-types: 2.2.0
       pgpass: 1.0.5
@@ -12292,6 +12283,10 @@ snapshots:
       '@types/unist': 3.0.3
       unist-util-is: 6.0.0
       unist-util-visit-parents: 6.0.1
+
+  unpdf@1.0.4(@napi-rs/canvas@0.1.70):
+    optionalDependencies:
+      '@napi-rs/canvas': 0.1.70
 
   uri-js@4.4.1:
     dependencies:

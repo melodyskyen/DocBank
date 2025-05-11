@@ -9,6 +9,8 @@ import {
   primaryKey,
   foreignKey,
   boolean,
+  integer,
+  index,
 } from 'drizzle-orm/pg-core';
 
 export const user = pgTable('User', {
@@ -168,3 +170,31 @@ export const stream = pgTable(
 );
 
 export type Stream = InferSelectModel<typeof stream>;
+
+export const managedFile = pgTable(
+  'ManagedFile',
+  {
+    id: uuid('id').primaryKey().notNull().defaultRandom(),
+    name: text('name').notNull(),
+    blobUrl: text('blobUrl').notNull(),
+    blobDownloadUrl: text('blobDownloadUrl').notNull(),
+    mimeType: varchar('mimeType', { length: 255 }).notNull(),
+    size: integer('size').notNull(),
+    aiSummary: text('aiSummary'),
+    tags: json('tags').$type<string[]>(),
+    uploadedAt: timestamp('uploadedAt', { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    userId: uuid('userId')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    isEmbedded: boolean('isEmbedded').notNull().default(false),
+  },
+  (table) => {
+    return {
+      userIdx: index('managedFile_userId_idx').on(table.userId),
+    };
+  },
+);
+
+export type ManagedFile = InferSelectModel<typeof managedFile>;

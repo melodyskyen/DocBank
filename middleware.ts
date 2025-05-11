@@ -13,7 +13,8 @@ export async function middleware(request: NextRequest) {
     return new Response('pong', { status: 200 });
   }
 
-  if (pathname.startsWith('/api/auth')) {
+  // Allow NextAuth.js specific paths and Inngest API path to pass through
+  if (pathname.startsWith('/api/auth') || pathname.startsWith('/api/inngest')) {
     return NextResponse.next();
   }
 
