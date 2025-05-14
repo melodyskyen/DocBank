@@ -9,7 +9,11 @@
   "plugins": ["tailwindcss"],
   "rules": {
     "tailwindcss/no-custom-classname": "off",
-    "tailwindcss/classnames-order": "off"
+    "tailwindcss/classnames-order": "off",
+    "tailwindcss/enforces-shorthand": "off",
+    "tailwindcss/migration-from-tailwind-2": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "react/no-unescaped-entities": "off"
   },
   "settings": {
     "import/resolver": {

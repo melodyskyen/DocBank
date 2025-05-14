@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import type { DBManagedFileType } from '@/lib/db/schema';
 import { FileUploadModal } from '@/components/file-manager/file-upload-modal';
-import { fetcher } from '@/lib/utils';
+import { fetcher, cn } from '@/lib/utils';
 import FileListItem from '@/components/file-manager/file-list-item';
 import type { Realtime } from '@inngest/realtime';
 import {
@@ -35,7 +35,6 @@ import {
   CommandSeparator,
 } from '@/components/ui/command';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
 
 interface MultiSelectTagsProps {
   allTags: string[] | undefined;
