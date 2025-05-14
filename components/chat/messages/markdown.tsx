@@ -3,6 +3,7 @@ import React, { memo } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CodeBlock } from './code-block';
+import { CitationBadge } from '../citation-badge';
 
 const components: Partial<Components> = {
   // @ts-expect-error
@@ -37,6 +38,18 @@ const components: Partial<Components> = {
     );
   },
   a: ({ node, children, ...props }) => {
+    const url = props.href;
+    // if children is a number, it is a citation
+    const isCitation = !Number.isNaN(Number(children));
+    if (isCitation) {
+      return (
+        <CitationBadge
+          citationNumber={Number(children)}
+          className="ml-1"
+          url={url}
+        />
+      );
+    }
     return (
       // @ts-expect-error
       <Link

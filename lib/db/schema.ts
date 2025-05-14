@@ -177,8 +177,8 @@ export const managedFile = pgTable(
     id: uuid('id').primaryKey().notNull().defaultRandom(),
     name: text('name').notNull(),
     blobUrl: text('blobUrl').notNull(),
-    blobDownloadUrl: text('blobDownloadUrl').notNull(),
-    mimeType: varchar('mimeType', { length: 255 }).notNull(),
+    blobDownloadUrl: text('blobDownloadUrl'),
+    mimeType: text('mimeType').notNull(),
     size: integer('size').notNull(),
     aiSummary: text('aiSummary'),
     tags: json('tags').$type<string[]>(),
@@ -197,4 +197,16 @@ export const managedFile = pgTable(
   },
 );
 
-export type ManagedFile = InferSelectModel<typeof managedFile>;
+export type DBManagedFileType = typeof managedFile.$inferSelect;
+export type NewManagedFile = Omit<
+  DBManagedFileType,
+  'id' | 'uploadedAt' | 'isEmbedded'
+>;
+
+export const tag = pgTable('Tag', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  name: varchar('name', { length: 64 }).notNull().unique(),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+});
+
+export type DBTag = InferSelectModel<typeof tag>;

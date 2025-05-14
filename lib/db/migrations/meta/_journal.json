@@ -57,6 +57,13 @@
       "when": 1746997381815,
       "tag": "0007_tearful_medusa",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1747181503500,
+      "tag": "0008_magenta_husk",
+      "breakpoints": true
     }
   ]
 }

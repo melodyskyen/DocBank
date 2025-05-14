@@ -13,7 +13,8 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, UploadCloudIcon, AlertCircle } from 'lucide-react';
+import { Loader2, UploadCloudIcon, AlertCircle, X } from 'lucide-react';
+import { Badge } from '../ui/badge';
 
 interface FileUploadModalProps {
   isOpen: boolean;
@@ -29,7 +30,10 @@ export function FileUploadModal({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [tagInput, setTagInput] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const tagInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files?.[0]) {
@@ -38,6 +42,21 @@ export function FileUploadModal({
     } else {
       setSelectedFile(null);
     }
+  };
+
+  const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && tagInput.trim()) {
+      e.preventDefault();
+      // Prevent adding duplicate tags
+      if (!tags.includes(tagInput.trim())) {
+        setTags([...tags, tagInput.trim()]);
+      }
+      setTagInput('');
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    setTags(tags.filter((tag) => tag !== tagToRemove));
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -53,6 +72,11 @@ export function FileUploadModal({
     const formData = new FormData();
     formData.append('file', selectedFile);
     formData.append('needToEmbed', 'true'); // As per your API requirement
+
+    // Add tags to the request
+    if (tags.length > 0) {
+      formData.append('tags', JSON.stringify(tags));
+    }
 
     try {
       const response = await fetch('/api/files/upload', {
@@ -88,6 +112,8 @@ export function FileUploadModal({
     setSelectedFile(null);
     setIsUploading(false);
     setError(null);
+    setTags([]);
+    setTagInput('');
     if (fileInputRef.current) {
       fileInputRef.current.value = ''; // Reset file input
     }
@@ -125,6 +151,39 @@ export function FileUploadModal({
               disabled={isUploading}
               className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 dark:file:bg-primary/20 dark:file:text-primary dark:hover:file:bg-primary/30 cursor-pointer"
             />
+          </div>
+          <div>
+            <Label htmlFor="tags" className="block text-sm font-medium mb-1">
+              Tags (optional)
+            </Label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {tags.map((tag) => (
+                <Badge key={tag} className="gap-1 px-2 py-1">
+                  {tag}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveTag(tag)}
+                    className="text-xs rounded-full"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
+              ))}
+            </div>
+            <Input
+              id="tags"
+              type="text"
+              placeholder="Add tags and press Enter"
+              ref={tagInputRef}
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+              onKeyDown={handleAddTag}
+              disabled={isUploading}
+              className="mt-1"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              Add tags to help organize your files. Press Enter to add each tag.
+            </p>
           </div>
           {selectedFile && (
             <div className="text-sm text-muted-foreground">

@@ -3,7 +3,11 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { auth } from '@/app/(auth)/auth';
-import { createManagedFile, type NewManagedFile } from '@/lib/db/queries';
+import {
+  createManagedFile,
+  type NewManagedFile,
+  createTagIfNotExists,
+} from '@/lib/db/queries';
 import { inngest } from '@/src/inngest/client';
 
 // Use Blob instead of File since File is not available in Node.js environment
@@ -88,15 +92,29 @@ export async function POST(request: Request) {
     }
 
     // Prepare data for createManagedFile, excluding auto-generated fields
+    const tagsParam = formData.get('tags');
+    let tags: string[] = [];
+    if (tagsParam) {
+      const parsedTags = JSON.parse(tagsParam as string);
+      if (Array.isArray(parsedTags)) {
+        tags = parsedTags.filter((tag) => typeof tag === 'string').slice(0, 10);
+
+        // Save each tag to the tags table
+        for (const tag of tags) {
+          await createTagIfNotExists(tag);
+        }
+      }
+    }
+
     const newFileData: NewManagedFile = {
       name: originalFilename,
       blobUrl: blobData.url,
       blobDownloadUrl: blobData.url,
       mimeType: file.type,
       size: file.size,
+      aiSummary: null, // Initialize aiSummary as null
+      tags: tags, // Use the processed tags array
       userId: session.user.id,
-      tags: [], // Default tags
-      aiSummary: null, // Explicitly set aiSummary to null
     };
 
     // 2. Create initial record in our database

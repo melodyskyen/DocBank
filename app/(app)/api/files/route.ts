@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getManagedFilesByUserId } from '@/lib/db/queries';
+import { getManagedFilesByUserId, deleteManagedFile } from '@/lib/db/queries';
 import { auth } from '@/app/(auth)/auth';
 
 export async function GET() {
@@ -21,4 +21,15 @@ export async function GET() {
       { status: 500 },
     );
   }
+}
+
+export async function DELETE(request: Request) {
+  const session = await auth();
+  if (!session || !session.user?.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const { id } = await request.json();
+  const deleted = await deleteManagedFile(id);
+  return NextResponse.json(deleted);
 }

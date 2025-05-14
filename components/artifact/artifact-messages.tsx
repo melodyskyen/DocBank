@@ -61,6 +61,9 @@ function PureArtifactMessages({
           requiresScrollPadding={
             hasSentMessage && index === messages.length - 1
           }
+          onViewSource={() => {
+            console.log('view source');
+          }}
         />
       ))}
 

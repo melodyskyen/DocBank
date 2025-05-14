@@ -19,8 +19,21 @@ import { MessageEditor } from './message-editor';
 import { DocumentPreview } from '../../document/document-preview';
 import { MessageReasoning } from './message-reasoning';
 import type { UseChatHelpers } from '@ai-sdk/react';
+import { SourceCard, type SourceDataType } from '../source-card';
 
-const PurePreviewMessage = ({
+export interface PurePreviewMessageProps {
+  chatId: string;
+  message: UIMessage;
+  isLoading: boolean;
+  vote: Vote | undefined;
+  setMessages: UseChatHelpers['setMessages'];
+  reload: UseChatHelpers['reload'];
+  isReadonly: boolean;
+  requiresScrollPadding: boolean;
+  onViewSource: (fileUrl: string, title?: string) => void;
+}
+
+export function PurePreviewMessage({
   chatId,
   message,
   vote,
@@ -29,17 +42,12 @@ const PurePreviewMessage = ({
   reload,
   isReadonly,
   requiresScrollPadding,
-}: {
-  chatId: string;
-  message: UIMessage;
-  vote: Vote | undefined;
-  isLoading: boolean;
-  setMessages: UseChatHelpers['setMessages'];
-  reload: UseChatHelpers['reload'];
-  isReadonly: boolean;
-  requiresScrollPadding: boolean;
-}) => {
+  onViewSource,
+}: PurePreviewMessageProps) {
   const [mode, setMode] = useState<'view' | 'edit'>('view');
+
+  console.log(message);
+  let citationCounter = 1;
 
   return (
     <AnimatePresence>
@@ -98,6 +106,19 @@ const PurePreviewMessage = ({
                     isLoading={isLoading}
                     reasoning={part.reasoning}
                   />
+                );
+              }
+
+              if (type === 'source') {
+                const sourceData = part.source as SourceDataType;
+                return (
+                  <div key={`${type}-${index}-${message.id}`} className="mt-2">
+                    <SourceCard
+                      source={sourceData}
+                      citationNumber={citationCounter++}
+                      onViewSource={onViewSource}
+                    />
+                  </div>
                 );
               }
 
@@ -212,6 +233,10 @@ const PurePreviewMessage = ({
                           result={result}
                           isReadonly={isReadonly}
                         />
+                      ) : toolName === 'searchKnowledgeBase' ? (
+                        <div className="text-muted-foreground">
+                          Searched knowledge base, found {result.length} results
+                        </div>
                       ) : (
                         <pre>{JSON.stringify(result, null, 2)}</pre>
                       )}
@@ -235,7 +260,7 @@ const PurePreviewMessage = ({
       </motion.div>
     </AnimatePresence>
   );
-};
+}
 
 export const PreviewMessage = memo(
   PurePreviewMessage,
@@ -246,6 +271,7 @@ export const PreviewMessage = memo(
       return false;
     if (!equal(prevProps.message.parts, nextProps.message.parts)) return false;
     if (!equal(prevProps.vote, nextProps.vote)) return false;
+    if (prevProps.onViewSource !== nextProps.onViewSource) return false;
 
     return true;
   },

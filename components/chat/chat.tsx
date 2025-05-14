@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
 import { ChatHeader } from '@/components/chat/chat-header';
 import type { Vote } from '@/lib/db/schema';
-import { fetcher, generateUUID } from '@/lib/utils';
+import { fetcher, generateUUID, cn } from '@/lib/utils';
 import { Artifact } from '../artifact/artifact';
 import { MultimodalInput } from './multimodal-input';
 import { Messages } from './messages/messages';
@@ -19,6 +19,8 @@ import type { Session } from 'next-auth';
 import { useSearchParams } from 'next/navigation';
 import { useChatVisibility } from '@/hooks/use-chat-visibility';
 import { useAutoResume } from '@/hooks/use-auto-resume';
+import { FileViewerPane } from './file-viewer-pane';
+import { useSidebar } from '../ui/sidebar';
 
 export function Chat({
   id,
@@ -84,13 +86,30 @@ export function Chat({
 
   const [hasAppendedQuery, setHasAppendedQuery] = useState(false);
 
+  const [isFileViewerOpen, setIsFileViewerOpen] = useState(false);
+  const [currentFileUrlToView, setCurrentFileUrlToView] = useState<
+    string | null
+  >(null);
+  const [currentFileTitleToView, setCurrentFileTitleToView] = useState<
+    string | undefined
+  >(undefined);
+
+  const { setOpen: setSidebarOpen } = useSidebar();
+
+  const handleViewSource = (fileUrl: string, title?: string) => {
+    setSidebarOpen(false);
+    setCurrentFileUrlToView(fileUrl);
+    console.log(fileUrl);
+    setCurrentFileTitleToView(title);
+    setIsFileViewerOpen(true);
+  };
+
   useEffect(() => {
     if (query && !hasAppendedQuery) {
       append({
         role: 'user',
         content: query,
       });
-
       setHasAppendedQuery(true);
       window.history.replaceState({}, '', `/chat/${id}`);
     }
@@ -113,30 +132,81 @@ export function Chat({
   });
 
   return (
-    <>
-      <div className="flex flex-col min-w-0 h-dvh bg-background">
-        <ChatHeader
-          chatId={id}
-          selectedModelId={initialChatModel}
-          selectedVisibilityType={initialVisibilityType}
-          isReadonly={isReadonly}
-          session={session}
-        />
+    <div className={cn('w-full flex flex-col h-dvh bg-background')}>
+      <ChatHeader
+        chatId={id}
+        selectedModelId={initialChatModel}
+        selectedVisibilityType={initialVisibilityType}
+        isReadonly={isReadonly}
+        session={session}
+      />
+      <div className={cn('w-full flex flex-row flex-grow overflow-hidden')}>
+        <div
+          className={cn(
+            'h-full overflow-y-auto transition-all duration-300 ease-in-out',
+            isFileViewerOpen ? 'w-1/2 border-r' : 'w-0 p-0 border-none hidden',
+          )}
+        >
+          {isFileViewerOpen && (
+            <FileViewerPane
+              isOpen={true}
+              onClose={() => setIsFileViewerOpen(false)}
+              fileUrl={currentFileUrlToView}
+              title={currentFileTitleToView}
+            />
+          )}
+        </div>
 
-        <Messages
-          chatId={id}
-          status={status}
-          votes={votes}
-          messages={messages}
-          setMessages={setMessages}
-          reload={reload}
-          isReadonly={isReadonly}
-          isArtifactVisible={isArtifactVisible}
-        />
-
-        <form className="flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full md:max-w-3xl">
-          {!isReadonly && (
-            <MultimodalInput
+        <div
+          className={cn(
+            'flex flex-col h-full transition-all duration-300 ease-in-out',
+            isFileViewerOpen ? 'w-1/2' : 'w-full',
+          )}
+        >
+          <div
+            className={cn(
+              'flex flex-col flex-grow min-w-0 overflow-y-auto bg-background',
+            )}
+          >
+            <Messages
+              chatId={id}
+              status={status}
+              votes={votes}
+              messages={messages}
+              setMessages={setMessages}
+              reload={reload}
+              isReadonly={isReadonly}
+              isArtifactVisible={isArtifactVisible}
+              onViewSource={handleViewSource}
+            />
+            <form
+              className={cn(
+                'flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full mt-auto shrink-0',
+                isFileViewerOpen || isArtifactVisible
+                  ? 'md:max-w-full'
+                  : 'md:max-w-3xl',
+              )}
+            >
+              {!isReadonly && (
+                <MultimodalInput
+                  chatId={id}
+                  input={input}
+                  setInput={setInput}
+                  handleSubmit={handleSubmit}
+                  status={status}
+                  stop={stop}
+                  attachments={attachments}
+                  setAttachments={setAttachments}
+                  messages={messages}
+                  setMessages={setMessages}
+                  append={append}
+                  selectedVisibilityType={visibilityType}
+                />
+              )}
+            </form>
+          </div>
+          {isArtifactVisible && (
+            <Artifact
               chatId={id}
               input={input}
               setInput={setInput}
@@ -145,32 +215,17 @@ export function Chat({
               stop={stop}
               attachments={attachments}
               setAttachments={setAttachments}
+              append={append}
               messages={messages}
               setMessages={setMessages}
-              append={append}
+              reload={reload}
+              votes={votes}
+              isReadonly={isReadonly}
               selectedVisibilityType={visibilityType}
             />
           )}
-        </form>
+        </div>
       </div>
-
-      <Artifact
-        chatId={id}
-        input={input}
-        setInput={setInput}
-        handleSubmit={handleSubmit}
-        status={status}
-        stop={stop}
-        attachments={attachments}
-        setAttachments={setAttachments}
-        append={append}
-        messages={messages}
-        setMessages={setMessages}
-        reload={reload}
-        votes={votes}
-        isReadonly={isReadonly}
-        selectedVisibilityType={visibilityType}
-      />
-    </>
+    </div>
   );
 }

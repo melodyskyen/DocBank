@@ -28,12 +28,14 @@ import {
   type Chat,
   stream,
   managedFile,
-  type ManagedFile as DBManagedFileType,
+  type DBManagedFileType,
+  tag,
 } from './schema';
 import type { ArtifactKind } from '@/components/artifact/artifact';
 import { generateUUID } from '../utils';
 import { generateHashedPassword } from './utils';
 import type { VisibilityType } from '@/components/chat/visibility-selector';
+import { store as vectorStore } from './vector-store';
 
 // Optionally, if not using email/pass login, you can
 // use the Drizzle adapter for Auth.js / NextAuth
@@ -589,5 +591,84 @@ export async function getManagedFilesByUserId(
   } catch (error) {
     console.error('Failed to get managed files by user id', error);
     return [];
+  }
+}
+
+export async function deleteManagedFile(
+  id: string,
+): Promise<DBManagedFileType | null> {
+  try {
+    // First find the file to check if it's embedded
+    const fileToDelete = await getManagedFileById(id);
+    if (!fileToDelete) return null;
+
+    // Delete from vector store if embedded
+    if (fileToDelete.isEmbedded) {
+      const indexName = process.env.INDEX_NAME as string;
+      try {
+        // Get all vectors for the file
+        const vector = new Array(1536).fill(0) as number[];
+        const vectors = await vectorStore.query({
+          queryVector: vector,
+          indexName,
+          topK: 1000,
+          filter: {
+            fileId: id,
+          },
+        });
+
+        // Wtf is mastra naming this?
+        for (const vector of vectors) {
+          await vectorStore.deleteIndexById(indexName, vector.id);
+        }
+      } catch (vectorStoreError) {
+        console.error('Error deleting from vector store', vectorStoreError);
+        // Continue with DB deletion even if vector store deletion fails
+      }
+    }
+
+    // Delete from database
+    const [result] = await db
+      .delete(managedFile)
+      .where(eq(managedFile.id, id))
+      .returning();
+
+    return result || null;
+  } catch (error) {
+    console.error('Failed to delete managed file', error);
+    return null;
+  }
+}
+
+export async function getAllTags(): Promise<string[]> {
+  try {
+    const tags = await db
+      .select({ name: tag.name })
+      .from(tag)
+      .orderBy(asc(tag.name));
+    return tags.map((t) => t.name);
+  } catch (error) {
+    console.error('Failed to get tags', error);
+    return [];
+  }
+}
+
+export async function createTagIfNotExists(tagName: string): Promise<boolean> {
+  try {
+    await db.insert(tag).values({ name: tagName }).onConflictDoNothing();
+    return true;
+  } catch (error) {
+    console.error('Failed to create tag', error);
+    return false;
+  }
+}
+
+export async function deleteTag(id: string): Promise<boolean> {
+  try {
+    await db.delete(tag).where(eq(tag.id, id));
+    return true;
+  } catch (error) {
+    console.error('Failed to delete tag', error);
+    return false;
   }
 }

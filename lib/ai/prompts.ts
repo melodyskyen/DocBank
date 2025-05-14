@@ -60,9 +60,9 @@ export const systemPrompt = ({
   const requestPrompt = getRequestPromptFromHints(requestHints);
 
   if (selectedChatModel === 'chat-model-reasoning') {
-    return `${regularPrompt}\n\n${requestPrompt}`;
+    return `${regularPrompt}\n\n${requestPrompt}\n\n${reasoningPrompt}`;
   } else {
-    return `${regularPrompt}\n\n${requestPrompt}\n\n${artifactsPrompt}`;
+    return `${regularPrompt}\n\n${requestPrompt}\n\n${artifactsPrompt}\n\n${reasoningPrompt}`;
   }
 };
 
@@ -119,3 +119,24 @@ Improve the following spreadsheet based on the given prompt.
 ${currentContent}
 `
         : '';
+
+export const reasoningPrompt = `
+If you use search tools and get search results, please cite them in your response, you can do so by using markdown links.
+Cite using the order of the search results, starting with [1], along with the search result's url, like [1](url1) [2](url2) [3](url3).
+
+The example node would have this shape:
+{
+  "id": "123",
+  "title": "The title of the search result",
+  "url": "https://www.google.com",
+  "snippet": "The snippet of the search result"
+},
+{
+  "id": "456",
+  "title": "The title of the search result",
+  "url": "https://www.google.com",
+  "snippet": "The snippet of the search result"
+}
+
+You should cite as [1](https://www.google.com) [2](https://www.google.com)
+`;
