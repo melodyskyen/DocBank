@@ -309,8 +309,8 @@ export default function FileManager({ token }: FileManagerProps) {
   };
 
   return (
-    <div className="container mx-auto p-4 md:p-6 lg:p-8 h-full flex flex-col">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+    <div className="w-full p-4 md:p-6 lg:p-8 h-full flex flex-col">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 ">
         <h1 className="text-2xl font-semibold">File Manager</h1>
         <Button onClick={() => setIsUploadModalOpen(true)}>
           <PlusIcon className="mr-2 h-4 w-4" /> Add File
@@ -369,37 +369,39 @@ export default function FileManager({ token }: FileManagerProps) {
         </div>
       </div>
 
-      {isLoading ? (
-        <div className="text-center text-gray-500 dark:text-gray-400 mt-10 flex-grow flex flex-col justify-center items-center">
-          <Loader2Icon className="w-12 h-12 mb-4 animate-spin text-gray-400 dark:text-gray-500" />
-          <p className="text-xl font-semibold">Loading files...</p>
-        </div>
-      ) : filesError ? (
-        <div className="text-center text-red-500 dark:text-red-400 mt-10 flex-grow flex flex-col justify-center items-center">
-          <p className="text-xl font-semibold">Failed to load files</p>
-          <p>Please try again later</p>
-        </div>
-      ) : files && files.length === 0 ? (
-        <div className="text-center text-gray-500 dark:text-gray-400 mt-10 flex-grow flex flex-col justify-center items-center">
-          <FileTextIcon className="w-16 h-16 mb-4 text-gray-400 dark:text-gray-500" />
-          <p className="text-xl font-semibold">No files uploaded yet.</p>
-          <p>Click "Add File" to get started.</p>
-        </div>
-      ) : (
-        <div className="flex-grow overflow-y-auto">
-          <ul className="bg-white dark:bg-gray-800/30 shadow overflow-hidden sm:rounded-md">
-            {paginatedFiles.map((file) => (
-              <FileListItem
-                key={file.id}
-                token={token}
-                file={file}
-                onClick={() => handleFileClick(file.id)}
-                onDelete={handleDeleteFile}
-              />
-            ))}
-          </ul>
-        </div>
-      )}
+      <div className="w-full flex-grow overflow-y-auto">
+        {isLoading ? (
+          <div className="text-center text-gray-500 dark:text-gray-400 mt-10 flex-grow flex flex-col justify-center items-center">
+            <Loader2Icon className="w-12 h-12 mb-4 animate-spin text-gray-400 dark:text-gray-500" />
+            <p className="text-xl font-semibold">Loading files...</p>
+          </div>
+        ) : filesError ? (
+          <div className="text-center text-red-500 dark:text-red-400 mt-10 flex-grow flex flex-col justify-center items-center">
+            <p className="text-xl font-semibold">Failed to load files</p>
+            <p>Please try again later</p>
+          </div>
+        ) : files && files.length === 0 ? (
+          <div className="text-center text-gray-500 dark:text-gray-400 mt-10 flex-grow flex flex-col justify-center items-center">
+            <FileTextIcon className="w-16 h-16 mb-4 text-gray-400 dark:text-gray-500" />
+            <p className="text-xl font-semibold">No files uploaded yet.</p>
+            <p>Click "Add File" to get started.</p>
+          </div>
+        ) : (
+          <div className="flex-grow overflow-y-auto">
+            <ul className="bg-white dark:bg-gray-800/30 shadow sm:rounded-md">
+              {paginatedFiles.map((file) => (
+                <FileListItem
+                  key={file.id}
+                  token={token}
+                  file={file}
+                  onClick={() => handleFileClick(file.id)}
+                  onDelete={handleDeleteFile}
+                />
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
 
       {/* Pagination Controls */}
       {filteredAndSortedFiles && totalPages > 1 && (

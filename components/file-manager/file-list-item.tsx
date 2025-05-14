@@ -143,7 +143,7 @@ const FileListItem: React.FC<FileListItemProps> = ({
             )}
           </p>
           <p
-            className="text-xs text-gray-500 dark:text-gray-400 truncate"
+            className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-xl"
             title={
               file.aiSummary || fileStatus?.message || 'No summary available'
             }
