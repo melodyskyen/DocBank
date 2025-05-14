@@ -35,10 +35,9 @@ export const searchKnowledgeBase = ({
         indexName: process.env.INDEX_NAME as string,
         queryVector: embedding,
         topK: 10,
-        // TODO: Add filter by user ID
-        // filter: {
-        //   userId: session.user.id,
-        // },
+        filter: {
+          userId: session.user.id,
+        },
       });
 
       // Re-rank the results
