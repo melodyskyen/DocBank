@@ -101,7 +101,7 @@ export async function POST(request: Request) {
 
         // Save each tag to the tags table
         for (const tag of tags) {
-          await createTagIfNotExists(tag);
+          await createTagIfNotExists(tag, session.user.id);
         }
       }
     }

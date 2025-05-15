@@ -46,7 +46,6 @@ export function PurePreviewMessage({
 }: PurePreviewMessageProps) {
   const [mode, setMode] = useState<'view' | 'edit'>('view');
 
-  console.log(message);
   let citationCounter = 1;
 
   return (

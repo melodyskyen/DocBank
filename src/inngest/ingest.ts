@@ -179,7 +179,7 @@ export const embedFileOnUpload = inngest.createFunction(
     });
 
     // No need to fetch taxonomies, we'll generate tags directly
-    const existingTags = await getAllTags();
+    const existingTags = await getAllTags(userId);
 
     const { summary, tags } = await step.run(
       'generate-summary-and-tags',

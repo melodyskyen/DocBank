@@ -23,6 +23,7 @@ export function FileViewerPane({
   const [iframeError, setIframeError] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log('Reloading file viewer');
     if (fileUrl) {
       setIsLoadingIframe(true);
       setIframeError(null);
@@ -40,10 +41,10 @@ export function FileViewerPane({
           className={cn(
             'h-full bg-background shadow-xl flex flex-col w-full border-r',
           )}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
+          initial={{ x: '-100%', opacity: 0 }}
+          animate={{ x: '0%', opacity: 1 }}
+          exit={{ x: '-100%', opacity: 0 }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
         >
           <div className="flex items-center justify-between p-4 border-b">
             <h2
@@ -80,6 +81,7 @@ export function FileViewerPane({
                   </div>
                 )}
                 <iframe
+                  key={fileUrl}
                   src={fileUrl}
                   title={effectiveTitle}
                   className={cn(

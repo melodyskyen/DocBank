@@ -132,7 +132,9 @@ export function Chat({
   });
 
   return (
-    <div className={cn('w-full flex flex-col h-dvh bg-background')}>
+    <div
+      className={cn('w-full flex flex-col h-dvh bg-background max-w-[100vw]')}
+    >
       <ChatHeader
         chatId={id}
         selectedModelId={initialChatModel}
@@ -143,18 +145,16 @@ export function Chat({
       <div className={cn('w-full flex flex-row flex-grow overflow-hidden')}>
         <div
           className={cn(
-            'h-full overflow-y-auto transition-all duration-300 ease-in-out',
-            isFileViewerOpen ? 'w-1/2 border-r' : 'w-0 p-0 border-none hidden',
+            'h-full overflow-y-auto transition-all duration-300 ease-in-out overflow-x-hidden',
+            isFileViewerOpen ? 'w-1/2 border-r' : 'w-0 p-0 border-none',
           )}
         >
-          {isFileViewerOpen && (
-            <FileViewerPane
-              isOpen={true}
-              onClose={() => setIsFileViewerOpen(false)}
-              fileUrl={currentFileUrlToView}
-              title={currentFileTitleToView}
-            />
-          )}
+          <FileViewerPane
+            isOpen={isFileViewerOpen}
+            onClose={() => setIsFileViewerOpen(false)}
+            fileUrl={currentFileUrlToView}
+            title={currentFileTitleToView}
+          />
         </div>
 
         <div

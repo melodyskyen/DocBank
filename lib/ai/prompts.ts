@@ -121,6 +121,7 @@ ${currentContent}
         : '';
 
 export const reasoningPrompt = `
+Always use search tools if the user asks you about something niched, it might be in your private knowledge base, if you're unsure, ask the user if the thing they're asking about is public or private, if its private, use the search knowledge base tool.
 If you use search tools and get search results, please cite them in your response, you can do so by using markdown links.
 Cite using the order of the search results, starting with [1], along with the search result's url, like [1](url1) [2](url2) [3](url3).
 

@@ -1,24 +1,41 @@
-# Reginold: Fullstack RAG-as-a-Service Template
+# DocBank: Fullstack RAG-as-a-Service Template
 
-**Build your own AI-powered research assistant for your private knowledge base!**
+**Build your own fullstack AI-powered research assistant for your private knowledge base!**
 
-Reginold is a serverless Next.js template built for the Vercel AI SDK, leveraging **Mastra** for advanced Retrieval Augmented Generation (RAG) and **Inngest** for robust background job processing. This template provides a powerful foundation to quickly deploy a sophisticated RAG-as-a-Service application.
+Chatting with documents is one of the best general use cases for AI, both for personal and enterprise usecases, there are lots of tutorials for building a local system but no one really shows you how to build an integrated one you would launch for a SaaS.
 
-[![Star on GitHub](https://img.shields.io/github/stars/YOUR_USERNAME/YOUR_REPOSITORY?style=social)](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/stargazers)
+DocBank is a modern serverless Next.js template (extended from [Vercel's AI Chatbot](https://github.com/vercel/ai-chatbot)) built for the Vercel AI SDK, leveraging **Mastra** for Retrieval Augmented Generation (RAG) and **Inngest** for robust background job processing. This template provides a powerful foundation to quickly deploy a sophisticated RAG-as-a-Service application.
+
+[![Star on GitHub](https://img.shields.io/github/stars/KenjiPcx/DocBank?style=social)](https://github.com/KenjiPcx/DocBank)
 
 ---
 
 ## The Million-Dollar Idea, Now Free.
 
-There was a time when a product with these capabilities – a private, AI-driven knowledge assistant that can ingest and reason over your documents – would be a multi-million dollar endeavor. The AI landscape is evolving rapidly, and powerful tools are becoming more accessible.
+There was a time when a product with these capabilities – a private, AI-driven knowledge assistant that can ingest and reason over your documents – would be a multi-million dollar endeavor, its the core of all the new vertical AI SaaS. The AI landscape is evolving rapidly, and powerful tools are becoming more accessible.
 
-**Reginold is my contribution to the AI startup space.** I'm giving this template away for free to empower builders, innovators, and entrepreneurs like you.
+**DocBank is my contribution to the AI startup space.** I'm giving this template away for free to empower builders, innovators, and entrepreneurs like you.
 
 All I ask in return?
+
 1.  **Star this repository** on GitHub! ⭐
 2.  Give a **shoutout or a link back** when you build something amazing with it.
 
 Let's build the future of AI together!
+
+### What You Can Build With This
+
+Some ideas I have, centralizing data is the starting point
+
+- Build AI workflows for different verticals, imagine AI for consulting, AI for finance etc
+- Extend the template with integrations to Google Drive etc to sync into a central document hub
+- Extend the RAG with Agentic RAG
+- Launch your own RAG as a service to small businesses
+- A document hub for your family
+
+### Special Thanks To
+
+[Vercel's AI Chatbot](https://github.com/vercel/ai-chatbot) for their chatbot implementation
 
 ---
 
@@ -50,13 +67,11 @@ Let's build the future of AI together!
 4.  **Intelligent Retrieval**: Mastra performs semantic search for relevant document chunks.
 5.  **Augmented Generation**: Retrieved context is passed to an LLM via the Vercel AI SDK for answers.
 
-## Deploy Your Own
+<!-- ## Deploy Your Own
 
-Deploy your own version of Reginold to Vercel. You'll need to configure environment variables for your LLM, Inngest, Mastra, and database providers during setup.
+Deploy your own version of DocBank to Vercel. You'll need to configure environment variables for your LLM, Inngest, Mastra, and database providers during setup. -->
 
 <!-- [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FYOUR_USERNAME%2FYOUR_REPOSITORY&env=OPENAI_API_KEY,INNGEST_EVENT_KEY,INNGEST_SIGNING_KEY,MASTRA_API_KEY,DATABASE_URL,NEXTAUTH_SECRET&envDescription=Required%20environment%20variables%20for%20Synapse%20AI.&project-name=synapse-ai-rag&repository-name=synapse-ai-rag&demo-title=Synapse%20AI%20RAG%20Service&demo-url=https%3A%2F%2Fyour-demo-url.vercel.app) -->
-
-*(Note: Update the `repository-url` in the Deploy button above and the environment variables (`env=...`) to match the essential ones for your template. The `demo-url` should point to a live demo if you have one.)*
 
 ## Getting Started
 
@@ -85,32 +100,12 @@ Deploy your own version of Reginold to Vercel. You'll need to configure environm
     ```
 3.  **Set Up Environment Variables**:
     Copy `.env.example` to `.env.local` and fill in your credentials. **Do not commit `.env.local`!**
-    ```env
-    # LLM Provider (e.g., OpenAI)
-    OPENAI_API_KEY=
-
-    # Inngest (ensure these match your Inngest setup - dev server or Cloud)
-    INNGEST_EVENT_KEY=
-    # INNGEST_SIGNING_KEY= # Required if using Inngest Cloud and secure webhooks
-    # INNGEST_DEV=true # To use the Inngest Dev Server locally without signing key
-
-    # Mastra / Vector Store / Database
-    # Provide specific variables needed for Mastra and your chosen DB
-    # e.g., for Supabase:
-    # SUPABASE_URL=
-    # SUPABASE_SERVICE_ROLE_KEY=
-    # e.g., for Pinecone:
-    # PINECONE_API_KEY=
-    # PINECONE_ENVIRONMENT=
-    # PINECONE_INDEX_NAME=
-    DATABASE_URL= # General database connection string if Mastra uses it directly
-
-    # Authentication (Auth.js)
-    NEXTAUTH_URL=http://localhost:3000
-    NEXTAUTH_SECRET= # Generate a strong secret: `openssl rand -base64 32`
-    # Add any OAuth provider client IDs/secrets if configured
-    # GITHUB_CLIENT_ID=
-    # GITHUB_CLIENT_SECRET=
+4.  **Set Up DB**:
+    You can get most of the variables from Vercel, once you have your postgres url, uncomment the script in `scripts/init-vector-store` and run it to create a PG Vector Store, also run the drizzle migration scripts:
+    ```
+    pnpm db:generate
+    pnpm db:push
+    pnpm db:init-vector-store (you have to uncomment the code first, then comment it back when you're done)
     ```
 4.  **Run Inngest Dev Server** (for local development with Inngest functions):
     Open a new terminal and run:
@@ -122,18 +117,6 @@ Deploy your own version of Reginold to Vercel. You'll need to configure environm
     pnpm dev
     ```
     Your app should now be running on [http://localhost:3000](http://localhost:3000).
-
-## Project Structure (Example)
-
-```
-/app                    # Next.js App Router: UI pages & API routes
-/components             # Shared React components
-/inngest                # Inngest function definitions
-/lib                    # Core logic: Mastra client, DB interactions, utils
-/public                 # Static assets (images, fonts)
-.env.example            # Template for environment variables
-# ... and other standard Next.js files
-```
 
 ## Customization
 
@@ -151,10 +134,3 @@ Contributions are welcome! Please follow standard fork, branch, commit, and PR p
 Licensed under the MIT License. See `LICENSE.txt`.
 
 ---
-
-**Thank you for checking out Reginold! Star the repo, and let me know what you build!**
-
-Connect with me:
-*   GitHub: [@YourGitHubUsername](https://github.com/YourGitHubUsername) 
-*   Twitter: [@YourTwitterHandle](https://twitter.com/YourTwitterHandle)
-*   LinkedIn: [Your LinkedIn Profile URL](https://linkedin.com/in/yourprofile)

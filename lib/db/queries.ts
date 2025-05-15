@@ -640,11 +640,12 @@ export async function deleteManagedFile(
   }
 }
 
-export async function getAllTags(): Promise<string[]> {
+export async function getAllTags(userId: string): Promise<string[]> {
   try {
     const tags = await db
       .select({ name: tag.name })
       .from(tag)
+      .where(eq(tag.userId, userId))
       .orderBy(asc(tag.name));
     return tags.map((t) => t.name);
   } catch (error) {
@@ -653,9 +654,15 @@ export async function getAllTags(): Promise<string[]> {
   }
 }
 
-export async function createTagIfNotExists(tagName: string): Promise<boolean> {
+export async function createTagIfNotExists(
+  tagName: string,
+  userId: string,
+): Promise<boolean> {
   try {
-    await db.insert(tag).values({ name: tagName }).onConflictDoNothing();
+    await db
+      .insert(tag)
+      .values({ name: tagName, userId })
+      .onConflictDoNothing();
     return true;
   } catch (error) {
     console.error('Failed to create tag', error);

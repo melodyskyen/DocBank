@@ -100,7 +100,7 @@ export const SourceCard: React.FC<SourceCardProps> = ({
           )}
         </CardHeader>
         <CollapsibleContent>
-          <CardContent className="p-4 pt-0">
+          <CardContent className="p-4 pt-0 max-w-[37.5vw]">
             {text && (
               <p className="text-sm text-muted-foreground mb-3 whitespace-pre-wrap">
                 {text}

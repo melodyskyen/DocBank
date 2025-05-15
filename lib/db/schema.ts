@@ -207,6 +207,9 @@ export const tag = pgTable('Tag', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
   name: varchar('name', { length: 64 }).notNull().unique(),
   createdAt: timestamp('createdAt').notNull().defaultNow(),
+  userId: uuid('userId')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
 });
 
 export type DBTag = InferSelectModel<typeof tag>;

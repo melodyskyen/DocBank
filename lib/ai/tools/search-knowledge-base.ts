@@ -62,6 +62,6 @@ export const searchKnowledgeBase = ({
       }
 
       // TODO: Use another query as node parser to get relevant results
-      return results;
+      return rerankedResults;
     },
   });

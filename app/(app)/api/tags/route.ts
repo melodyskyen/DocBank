@@ -8,6 +8,6 @@ export async function GET(request: Request) {
     return new Response('Unauthorized', { status: 401 });
   }
 
-  const tags = await getAllTags();
+  const tags = await getAllTags(session.user.id);
   return Response.json(tags, { status: 200 });
 }
