@@ -6,6 +6,15 @@ Chatting with documents is one of the best general use cases for AI, both for pe
 
 DocBank is a modern serverless Next.js template (extended from [Vercel's AI Chatbot](https://github.com/vercel/ai-chatbot)) built for the Vercel AI SDK, leveraging **Mastra** for Retrieval Augmented Generation (RAG) and **Inngest** for robust background job processing. This template provides a powerful foundation to quickly deploy a sophisticated RAG-as-a-Service application.
 
+Upload your documents here
+
+![image](https://github.com/user-attachments/assets/531a91b7-f103-4a63-95dc-2e4c7484450e)
+
+Chat with them here + do all the things you can do with the Vercel AI chatbot
+
+![research assistant](https://github.com/user-attachments/assets/be1af794-28d7-47dd-a8b0-b84939acb25d)
+
+
 [![Star on GitHub](https://img.shields.io/github/stars/KenjiPcx/DocBank?style=social)](https://github.com/KenjiPcx/DocBank)
 
 ---
