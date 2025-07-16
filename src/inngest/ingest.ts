@@ -25,6 +25,8 @@ interface FileEmbedRequestedEvent {
   };
 }
 
+
+
 export const embedFileOnUpload = inngest.createFunction(
   { id: 'embed-file-on-upload', name: 'Embed File on Upload' },
   { event: 'file/embed.requested' as FileEmbedRequestedEvent['name'] }, // Type assertion for event name
@@ -33,14 +35,14 @@ export const embedFileOnUpload = inngest.createFunction(
       event.data;
     const { id: userId } = event.user;
 
-    const channel = `user:${userId}`;
-    const topic = 'embed-file-status';
-
     const openai =  createOpenAI({
       // 若没有配置环境变量，请用百炼API Key将下行替换为：apiKey: "sk-xxx",
       apiKey: 'sk-8640b9894b214543b4f6e3a5c99d84c1',
       baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
     });
+
+    const channel = `user:${userId}`;
+    const topic = 'embed-file-status';
 
     // Publish initial status
     await publish({
@@ -233,6 +235,7 @@ export const embedFileOnUpload = inngest.createFunction(
             keywords: true,
             summary: true,
           }, // If you want Mastra to extract metadata (may use LLM)
+          LLM:openai,
         });
         // Include additional metadata that will be used for embedding
         chunks.forEach((chunk) => {
@@ -262,9 +265,7 @@ export const embedFileOnUpload = inngest.createFunction(
         values: chunks.map(
           (chunk) => `${JSON.stringify(chunk.metadata)}\n\n${chunk.text}`,
         ), // Use your own metadata template here
-        model: openai.embedding('text-embedding-v4', {
-          dimensions: 1536,
-        }), // Ensure dimensions match pgVector setup
+        model: openai('text-embedding-v4'), // Ensure dimensions match pgVector setup
       });
     });
     console.log('Successfully generated embeddings', embeddings.length);

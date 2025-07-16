@@ -22,7 +22,6 @@ interface SettingsModalProps {
   onSettingsSaved: () => void; // Callback to indicate settings have been saved (and first-time flag should be set)
 }
 
-export const OPENAI_API_KEY_STORAGE_KEY = 'openai_api_key';
 export const X_AI_API_KEY_STORAGE_KEY = 'x_ai_api_key';
 
 export function SettingsModal({
@@ -35,7 +34,6 @@ export function SettingsModal({
   const [xAiApiKey, setXAiApiKey] = useState('');
 
   useEffect(() => {
-    const storedOpenAiKey = localStorage.getItem(OPENAI_API_KEY_STORAGE_KEY);
     const storedXAiKey = localStorage.getItem(X_AI_API_KEY_STORAGE_KEY);
     if (storedOpenAiKey) {
       setOpenAiApiKey(storedOpenAiKey);
@@ -46,7 +44,6 @@ export function SettingsModal({
   }, []);
 
   const handleSave = () => {
-    localStorage.setItem(OPENAI_API_KEY_STORAGE_KEY, openAiApiKey);
     localStorage.setItem(X_AI_API_KEY_STORAGE_KEY, xAiApiKey);
     toast({
       type: 'success',

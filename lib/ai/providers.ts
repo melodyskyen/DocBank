@@ -3,7 +3,6 @@ import {
   extractReasoningMiddleware,
   wrapLanguageModel,
 } from 'ai';
-import { xai } from '@ai-sdk/xai';
 import { isTestEnvironment } from '../constants';
 import {
   artifactModel,
@@ -11,6 +10,12 @@ import {
   reasoningModel,
   titleModel,
 } from './models.test';
+import {createOpenAI} from "@ai-sdk/openai";
+const openai =  createOpenAI({
+  // 若没有配置环境变量，请用百炼API Key将下行替换为：apiKey: "sk-xxx",
+  apiKey: 'sk-8640b9894b214543b4f6e3a5c99d84c1',
+  baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+});
 
 export const myProvider = isTestEnvironment
   ? customProvider({
@@ -23,15 +28,15 @@ export const myProvider = isTestEnvironment
     })
   : customProvider({
       languageModels: {
-        'chat-model': xai('grok-2-vision-1212'),
+        'chat-model': openai('qwen-max-latest'),
         'chat-model-reasoning': wrapLanguageModel({
-          model: xai('grok-3-mini-beta'),
+          model: openai('qwen-max-latest'),
           middleware: extractReasoningMiddleware({ tagName: 'think' }),
         }),
-        'title-model': xai('grok-2-1212'),
-        'artifact-model': xai('grok-2-1212'),
+        'title-model': openai('qwen-max-latest'),
+        'artifact-model': openai('qwen-max-latest'),
       },
       imageModels: {
-        'small-model': xai.image('grok-2-image'),
+        'small-model': openai('qwen-max-latest'),
       },
     });

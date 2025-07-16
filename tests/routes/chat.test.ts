@@ -9,6 +9,7 @@ test.describe
     test('Ada cannot invoke a chat generation with empty request body', async ({
       adaContext,
     }) => {
+      console.log("🚀 test actually started!");
       const response = await adaContext.request.post('/api/chat', {
         data: JSON.stringify({}),
       });

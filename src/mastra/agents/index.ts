@@ -1,7 +1,7 @@
-import { openai } from '@ai-sdk/openai';
-import { Agent } from '@mastra/core/agent';
-import { Memory } from '@mastra/memory';
-import { weatherTool } from '../tools';
+
+// import { Agent } from '@mastra/core/agent';
+// import { Memory } from '@mastra/memory';
+// import { weatherTool } from '../tools';
 
 // export const weatherAgent = new Agent({
 //   name: 'Weather Agent',
