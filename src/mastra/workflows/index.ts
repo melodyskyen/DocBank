@@ -1,9 +1,16 @@
-import { openai } from '@ai-sdk/openai';
+
 import { Agent } from '@mastra/core/agent';
 import { Step, Workflow } from '@mastra/core/workflows';
 import { z } from 'zod';
+import {createOpenAI} from "@ai-sdk/openai";
 
-const llm = openai('gpt-4o');
+const openai =  createOpenAI({
+  // 若没有配置环境变量，请用百炼API Key将下行替换为：apiKey: "sk-xxx",
+  apiKey: 'sk-8640b9894b214543b4f6e3a5c99d84c1',
+  baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+});
+
+const llm = openai('qwen-max-latest');
 
 const agent = new Agent({
   name: 'Weather Agent',
