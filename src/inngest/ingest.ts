@@ -24,11 +24,6 @@ interface FileEmbedRequestedEvent {
     id: string;
   };
 }
-const openai =  createOpenAI({
-  // 若没有配置环境变量，请用百炼API Key将下行替换为：apiKey: "sk-xxx",
-  apiKey: 'sk-8640b9894b214543b4f6e3a5c99d84c1',
-  baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
-});
 
 export const embedFileOnUpload = inngest.createFunction(
   { id: 'embed-file-on-upload', name: 'Embed File on Upload' },
@@ -40,6 +35,12 @@ export const embedFileOnUpload = inngest.createFunction(
 
     const channel = `user:${userId}`;
     const topic = 'embed-file-status';
+
+    const openai =  createOpenAI({
+      // 若没有配置环境变量，请用百炼API Key将下行替换为：apiKey: "sk-xxx",
+      apiKey: 'sk-8640b9894b214543b4f6e3a5c99d84c1',
+      baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+    });
 
     // Publish initial status
     await publish({
